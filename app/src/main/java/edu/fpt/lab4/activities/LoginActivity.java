@@ -65,8 +65,8 @@ public class LoginActivity extends AppCompatActivity {
         if(Validate()>0) {
             ApiInterface apiInterface = RetrofitClient.getRetrofitInstance().create(ApiInterface.class);
 
-            User user = new User(); // Tạo đối tượng User với thông tin người dùng
-            String email=edEmail.getText().toString();
+            User user = new User();
+            String email=edEmail.getText().toString().trim();
             String pass=edPassword.getText().toString();
 
             user.setEmail(email);
@@ -80,13 +80,17 @@ public class LoginActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         try {
                             Toast.makeText(LoginActivity.this, "Logging Successful", Toast.LENGTH_SHORT).show();
-                            String email = edEmail.getText().toString();
+                            String email = edEmail.getText().toString().toString().trim();
                             String name = "";
                             String password="";
                             String address="";
                             String phone="";
+                            String objectId="";
 
                             JSONObject jsonObject = new JSONObject(response.body().string());
+                            if(jsonObject.has("id")){
+                                objectId=jsonObject.getString("id");
+                            }
                             if (jsonObject.has("email")) {
                                 email = jsonObject.getString("email");
                             }
@@ -103,9 +107,9 @@ public class LoginActivity extends AppCompatActivity {
                                 phone = jsonObject.getString("phone");
                             }
 
-                            Log.i("NAME USER", name);
 
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            intent.putExtra("id",objectId);
                             intent.putExtra("email", email);
                             intent.putExtra("name", name);
                             intent.putExtra("password", password);
@@ -121,13 +125,13 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     } else {
 
-                        Toast.makeText(LoginActivity.this, "Logging Failed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Logging Failed"+response.message(), Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Toast.makeText(LoginActivity.this, "Error ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Error "+t.getMessage(), Toast.LENGTH_SHORT).show();
                     Log.i("ERORR",""+t.getMessage());
                 }
             });

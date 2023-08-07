@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_header_layout"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:background="@color/colorPrimary"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:paddingLeft="20dp"
+    android:paddingTop="20dp"
+    android:paddingRight="20dp"
+    android:paddingBottom="20dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTintMode="screen"
+        app:cardCornerRadius="300dp"
+        app:cardElevation="6dp">
+
+        <ImageView
+            android:id="@+id/imgUserNav"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:contentDescription="ảnh"
+            app:srcCompat="@drawable/poly" />
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/tvUserNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:shadowColor="#0B0A0A"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/green_dark"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvComeback"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chào mừng bạn trở lại !"
+        android:textColor="@color/green_dark" />
+</LinearLayout>

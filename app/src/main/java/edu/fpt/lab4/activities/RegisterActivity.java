@@ -69,13 +69,11 @@ public class RegisterActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.isSuccessful()) {
-                        // Xử lý thành công
                         Toast.makeText(RegisterActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
                         clearText();
                         backToLogin();
 
                     } else {
-                        // Xử lý lỗi
                         try {
                             String errorBody = response.errorBody().string();
                             JSONObject jsonObject = new JSONObject(errorBody);

@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="5dp"
-    tools:context=".fragments.HomeFragment">
+    tools:context=".fragments.HomeFragment" >
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvHome"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+    <TextView
+        android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:src="@drawable/plus"
-        app:layout_anchor="@id/rvHome"
-        app:layout_anchorGravity="bottom|end"/>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        android:layout_weight="1"
+        android:fontFamily="@font/rouge_script"
+        android:text="Hello, Welcome back!"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:textAlignment="center" />
+</LinearLayout>

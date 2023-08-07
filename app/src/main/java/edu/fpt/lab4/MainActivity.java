@@ -1,22 +1,39 @@
 package edu.fpt.lab4;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
 
 
 import edu.fpt.lab4.activities.LoginActivity;
+import edu.fpt.lab4.fragments.EmployeeFragment;
+import edu.fpt.lab4.fragments.HomeFragment;
+import edu.fpt.lab4.fragments.SettingFragment;
 import edu.fpt.lab4.models.User;
 import edu.fpt.lab4.utils.ApiInterface;
 import edu.fpt.lab4.utils.RetrofitClient;
@@ -25,8 +42,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
-    private BottomNavigationView bottomNavigationView;
-
+    private DrawerLayout drawerLayout;
+    private Toolbar toolbar;
+    private FrameLayout frameLayout;
+    private NavigationView navigationView;
+    private View mHeaderView;
+    private TextView tvUser;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +58,76 @@ public class MainActivity extends AppCompatActivity {
         String password = intent.getStringExtra("password");
         String address = intent.getStringExtra("address");
         String phone = intent.getStringExtra("phone");
+        String id=intent.getStringExtra("id");
         setContentView(R.layout.activity_main);
 
+        toolbar=findViewById(R.id.toolBar);
+        frameLayout=findViewById(R.id.frameLayout);
+        navigationView=findViewById(R.id.navigationView);
+        drawerLayout=findViewById(R.id.drawer_layoutT);
+
+        mHeaderView=navigationView.getHeaderView(0);
+        tvUser=mHeaderView.findViewById(R.id.tvUserNav);
+
+
+        tvUser.setText(getName());
+
+
+        setSupportActionBar(toolbar);
+        ActionBar actionBar=getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(R.drawable.menu2);
+        ColorDrawable colorDrawable = new ColorDrawable(getColor(R.color.colorPrimary));
+        getSupportActionBar().setBackgroundDrawable(colorDrawable);
+
+
+        replaceFragment(new HomeFragment());
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                FragmentManager manager=getSupportFragmentManager();
+
+                if(item.getItemId()==R.id.navHome){
+                    replaceFragment(new HomeFragment());
+
+                }
+                if(item.getItemId()==R.id.navEmp){
+                    replaceFragment(new EmployeeFragment());
+
+                }
+                if(item.getItemId()==R.id.navSetting){
+                    replaceFragment(new SettingFragment());
+
+                }
+                if(item.getItemId()==R.id.navLogout){
+                    startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+                    finish();
+
+                }
+                drawerLayout.closeDrawer(GravityCompat.START);
+                toolbar.setTitle(item.getTitle());
+                return true;
+            }
+        });
+
+
+
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId()==android.R.id.home){
+            drawerLayout.openDrawer(GravityCompat.START);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    private void replaceFragment(Fragment fragment){
+        FragmentManager fragmentManager=getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frameLayout,fragment);
+        fragmentTransaction.commit();
     }
 
 //    private void openDialog(){
@@ -112,31 +201,38 @@ public class MainActivity extends AppCompatActivity {
 //        });
 //    }
 //
-//    private String getName(){
-//        Intent intent = getIntent();
-//        String name = intent.getStringExtra("name");
-//        return name;
-//    }
-//    private String getEmail(){
-//        Intent intent = getIntent();
-//        String email = intent.getStringExtra("email");
-//        return email;
-//    }
-//    private String getPhone(){
-//        Intent intent = getIntent();
-//        String phone = intent.getStringExtra("phone");
-//        return phone;
-//    }
-//    private String getPassword(){
-//        Intent intent = getIntent();
-//
-//        String password = intent.getStringExtra("password");
-//        return password;
-//    }
-//    private String getAddress(){
-//        Intent intent = getIntent();
-//        String address = intent.getStringExtra("address");
-//        return address;
-//
-//    }
+
+
+    public  String getBossID(){
+        Intent intent = getIntent();
+        String idBoss = intent.getStringExtra("id");
+        return idBoss;
+    }
+    private String getName(){
+        Intent intent = getIntent();
+        String name = intent.getStringExtra("name");
+        return name;
+    }
+    private String getEmail(){
+        Intent intent = getIntent();
+        String email = intent.getStringExtra("email");
+        return email;
+    }
+    private String getPhone(){
+        Intent intent = getIntent();
+        String phone = intent.getStringExtra("phone");
+        return phone;
+    }
+    private String getPassword(){
+        Intent intent = getIntent();
+
+        String password = intent.getStringExtra("password");
+        return password;
+    }
+    private String getAddress(){
+        Intent intent = getIntent();
+        String address = intent.getStringExtra("address");
+        return address;
+
+    }
 }
