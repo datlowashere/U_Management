@@ -9,10 +9,12 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.telephony.PhoneNumberUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
-import android.widget.Button;
+import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -34,8 +36,9 @@ import retrofit2.Response;
 public class AddEmployeeActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
     private ImageView imgPicker;
-    private EditText edName,edEmail,edPhone,edAddress,edRole;
-    private RadioButton rdoMale,rdoFemale;
+    private EditText edName,edEmail,edPhone,edAddress;
+    private TextView tvTitle;
+    private RadioButton rdoMale,rdoFemale,rdoAst,rdoCash,rdoFloor;
     private String base64Image;
 
     @SuppressLint("MissingInflatedId")
@@ -45,13 +48,17 @@ public class AddEmployeeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_employee);
         imgPicker = findViewById(R.id.imgSelected);
 
+
+        tvTitle=findViewById(R.id.tvTitleAddEmp);
         edName=findViewById(R.id.edNameEmp);
         edEmail=findViewById(R.id.edEmailEmp);
         edPhone=findViewById(R.id.edPhoneEmp);
         edAddress=findViewById(R.id.edAddressEmp);
-        edRole=findViewById(R.id.edRoleEmp);
         rdoMale=findViewById(R.id.radioButtonMale);
         rdoFemale=findViewById(R.id.radioButtonFemale);
+        rdoAst=findViewById(R.id.radioButtonAsst);
+        rdoCash=findViewById(R.id.radioButtonCashier);
+        rdoFloor=findViewById(R.id.radioButtonFloorManager);
 
 
 
@@ -75,12 +82,15 @@ public class AddEmployeeActivity extends AppCompatActivity {
         findViewById(R.id.btnSaveEmp).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveEmployee();
-                finish();
+                if(validateForm()>0) {
+                    saveEmployee();
+                    finish();
+                }
             }
         });
         MyEmployee currentEmployee = (MyEmployee) getIntent().getSerializableExtra("employeeData");
         if (currentEmployee != null) {
+            tvTitle.setText("Update Employee");
             edName.setText(currentEmployee.getName());
             if (currentEmployee.getGender().equals("Male")) {
                 rdoMale.setChecked(true);
@@ -90,7 +100,13 @@ public class AddEmployeeActivity extends AppCompatActivity {
             edEmail.setText(currentEmployee.getEmail());
             edPhone.setText(currentEmployee.getPhone());
             edAddress.setText(currentEmployee.getAddress());
-            edRole.setText(currentEmployee.getRole());
+            if(currentEmployee.getRole().equals("Assistant")){
+                rdoAst.setChecked(true);
+            }else if(currentEmployee.getRole().equals("Cashier")){
+                rdoCash.setChecked(true);
+            }else{
+                rdoFloor.setChecked(true);
+            }
 
             if (currentEmployee.getImage() != null && !currentEmployee.getImage().isEmpty()) {
                 byte[] decodedBytes = Base64.decode(currentEmployee.getImage(), Base64.DEFAULT);
@@ -104,29 +120,30 @@ public class AddEmployeeActivity extends AppCompatActivity {
 
 
     private void saveEmployee(){
-        String userId=getIDBoss();
-        String imgUrl=base64Image;
-        String name=edName.getText().toString().trim();
-        String gender = rdoMale.isChecked() ? "Male" : "Female";
-        String email=edEmail.getText().toString().trim();
-        String phone=edPhone.getText().toString();
-        String address=edAddress.getText().toString().trim();
-        String role=edRole.getText().toString().trim();
+            String userId = getIDBoss();
+            String imgUrl = base64Image;
+            String name = edName.getText().toString().trim();
+            String gender = rdoMale.isChecked() ? "Male" : "Female";
+            String email = edEmail.getText().toString().trim();
+            String phone = edPhone.getText().toString().trim();
+            String address = edAddress.getText().toString().trim();
+            String role = rdoAst.isChecked() ? "Assistant" : (rdoCash.isChecked() ? "Cashier" : "Floor manager");
 
-        MyEmployee currentEmployee = (MyEmployee) getIntent().getSerializableExtra("employeeData");
-        if (currentEmployee != null) {
-            currentEmployee.setName(name);
-            currentEmployee.setGender(gender);
-            currentEmployee.setEmail(email);
-            currentEmployee.setPhone(phone);
-            currentEmployee.setAddress(address);
-            currentEmployee.setRole(role);
-            currentEmployee.setImage(imgUrl);
-            updateEmployeeOnServer(currentEmployee);
-        } else {
-            MyEmployee newEmployee = new MyEmployee(userId, email, name, gender, imgUrl, role, phone, address);
-            createEmployeeOnServer(newEmployee);
-        }
+            MyEmployee currentEmployee = (MyEmployee) getIntent().getSerializableExtra("employeeData");
+            if (currentEmployee != null) {
+                edEmail.setEnabled(false);
+                currentEmployee.setName(name);
+                currentEmployee.setGender(gender);
+                currentEmployee.setEmail(email);
+                currentEmployee.setPhone(phone);
+                currentEmployee.setAddress(address);
+                currentEmployee.setRole(role);
+                currentEmployee.setImage(imgUrl);
+                updateEmployeeOnServer(currentEmployee);
+            } else {
+                MyEmployee newEmployee = new MyEmployee(userId, email, name, gender, imgUrl, role, phone, address);
+                createEmployeeOnServer(newEmployee);
+            }
 
 
     }
@@ -141,6 +158,7 @@ public class AddEmployeeActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(AddEmployeeActivity.this, "Failed to save employee.", Toast.LENGTH_SHORT).show();
                 }
+
             }
 
             @Override
@@ -220,6 +238,27 @@ public class AddEmployeeActivity extends AppCompatActivity {
 
         return base64Image;
     }
+    private int validateForm(){
+        int check=1;
+        String name=edName.getText().toString().trim();
+        String email=edEmail.getText().toString().trim();
+        String phone=edPhone.getText().toString();
+        String address=edAddress.getText().toString().trim();
+        if(name.isEmpty() || email.isEmpty() ||phone.isEmpty() || address.isEmpty()){
+            Toast.makeText(AddEmployeeActivity.this,"Please fill in all the fields",Toast.LENGTH_SHORT).show();
+            check=-1;
+        }else {
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(AddEmployeeActivity.this, "Email is incorrect!", Toast.LENGTH_SHORT).show();
+                check = -1;
+            }
+            if (!PhoneNumberUtils.isGlobalPhoneNumber(phone)) {
+                Toast.makeText(AddEmployeeActivity.this, "Invalid phone number", Toast.LENGTH_SHORT).show();
+                check = -1;
+            }
+        }
+        return check;
+    }
 
 
     private String getIDBoss(){
@@ -227,9 +266,4 @@ public class AddEmployeeActivity extends AppCompatActivity {
         return bossID;
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-
-    }
 }
