@@ -21,6 +21,11 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
 public class ForgotPasswordActivity extends AppCompatActivity {
 
     private TextInputEditText edMail;
@@ -35,7 +40,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ApiInterface apiInterface = RetrofitClient.getRetrofitInstance().create(ApiInterface.class);
-                String email = edMail.getText().toString();
+                String email = edMail.getText().toString().trim();
 
                 ResetPasswordRequest request = new ResetPasswordRequest(email);
                 Call<ResetPasswordResponse> call = apiInterface.requestResetPassword(request);
@@ -48,9 +53,20 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                             Intent intent = new Intent(ForgotPasswordActivity.this, ResetPasswordActivity.class);
                             intent.putExtra("email", email);
                             startActivity(intent);
+                            finish();
                         } else {
-                            // Xử lý lỗi
-                            Toast.makeText(ForgotPasswordActivity.this, "Reset password failed", Toast.LENGTH_SHORT).show();
+                            String errorBody = null;
+                            try {
+                                errorBody = response.errorBody().string();
+                                JSONObject jsonObject = new JSONObject(errorBody);
+                                String errorMessage = jsonObject.getString("message");
+                                Toast.makeText(ForgotPasswordActivity.this, "Reset password request failed"+errorMessage, Toast.LENGTH_SHORT).show();
+
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            } catch (JSONException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
                     }
 
