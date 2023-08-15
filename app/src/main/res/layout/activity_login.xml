@@ -40,8 +40,7 @@
                         android:orientation="vertical">
 
                         <ImageView
-                            android:id="@+id/imageView"
-                            android:layout_width="180dp"
+                            android:layout_width="150dp"
                             android:layout_height="50dp"
                             app:srcCompat="@drawable/poly" />
                     </LinearLayout>
@@ -52,9 +51,9 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/textView2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginRight="10dp"
                             android:fontFamily="@font/rouge_script"
                             android:text="U"
                             android:textAlignment="center"
@@ -62,11 +61,13 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/textView3"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="10dp"
                             android:fontFamily="@font/inter_bold"
-                            android:text="User Management" />
+                            android:padding="2dp"
+                            android:text="User Management"
+                            android:textAlignment="center" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -121,6 +122,7 @@
                             android:id="@+id/tvForgotPass"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:textStyle="bold"
                             android:layout_weight="1"
                             android:text="Forgot password!" />
                     </LinearLayout>
@@ -141,6 +143,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:padding="5dp"
+                        android:textStyle="bold"
                         android:text="Don't have an account? Register now !"
                         android:textAlignment="center" />
 
