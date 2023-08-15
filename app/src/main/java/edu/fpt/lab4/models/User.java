@@ -1,7 +1,9 @@
 package edu.fpt.lab4.models;
 
-public class User {
-    private String email,password,name,phone,address;
+import java.io.Serializable;
+
+public class User implements Serializable {
+    private String email,password,name,phone,address,img;
 
     public User() {
     }
@@ -18,6 +20,16 @@ public class User {
         this.address = address;
     }
 
+    public User(String email, String password, String name, String phone, String address, String img) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.phone = phone;
+        this.address = address;
+        this.img = img;
+    }
+
+
     public String getEmail() {
         return email;
     }
@@ -33,6 +45,7 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
 
     public String getName() {
         return name;
@@ -56,5 +69,13 @@ public class User {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
     }
 }
