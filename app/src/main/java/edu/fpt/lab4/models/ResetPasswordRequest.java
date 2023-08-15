@@ -7,18 +7,16 @@ public class ResetPasswordRequest {
     private String email;
 
     @SerializedName("resetToken")
-    private String resetToken;
+    private int resetToken;
 
     @SerializedName("newPassword")
     private String newPassword;
 
-    // Constructor cho yêu cầu reset mật khẩu
     public ResetPasswordRequest(String email) {
         this.email = email;
     }
 
-    // Constructor cho xác nhận mã và đặt lại mật khẩu mới
-    public ResetPasswordRequest(String email, String resetToken, String newPassword) {
+    public ResetPasswordRequest(String email, int resetToken, String newPassword) {
         this.email = email;
         this.resetToken = resetToken;
         this.newPassword = newPassword;
