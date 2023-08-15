@@ -19,20 +19,29 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiInterface {
+//    Register
     @POST("register")
     Call<ResponseBody> registerUser(@Body User user);
 
+//    Login
     @POST("login")
     Call<ResponseBody> loginUser(@Body User user);
 
-    @PUT("user/email/{userEmail}")
-    Call<User> updateUserByEmail(@Path("userEmail") String userEmail, @Body User user);
+
+// Get user
+    @GET("/users/{id}")
+    Call<User> getUserById(@Path("id") String userId);
+//   Update user
+    @PUT("users/{id}")
+    Call<User> updateUserById(@Path("id") String userId, @Body User user);
 
 
+//    Request reset password
     @POST("resetpassword/request")
     Call<ResetPasswordResponse> requestResetPassword(@Body ResetPasswordRequest request);
 
 
+//    Comfirm reset password
     @POST("resetpassword/confirm")
     Call<ResetPasswordResponse> confirmResetPassword(@Body ResetPasswordRequest request);
 
