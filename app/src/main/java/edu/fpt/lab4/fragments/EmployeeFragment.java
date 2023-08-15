@@ -81,11 +81,10 @@ public class EmployeeFragment extends Fragment {
 
 
 
+         employeeList = new ArrayList<>();
+         employeeAdapter = new MyEmployeeAdapter(getContext(), employeeList);
+         lv.setAdapter(employeeAdapter);
 
-
-        employeeList = new ArrayList<>();
-        employeeAdapter = new MyEmployeeAdapter(getContext(), employeeList);
-        lv.setAdapter(employeeAdapter);
 
         lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -93,8 +92,8 @@ public class EmployeeFragment extends Fragment {
                 MyEmployee selectedEmployee = employeeList.get(position);
                 String employeeId = selectedEmployee.get_id();
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("Tùy chọn");
-                builder.setItems(new CharSequence[]{"Sửa", "Xoá"}, new DialogInterface.OnClickListener() {
+                builder.setTitle("Options");
+                builder.setItems(new CharSequence[]{"Update", "Delete"}, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
@@ -216,18 +215,11 @@ public class EmployeeFragment extends Fragment {
     }
 
 
+
     private String getBossID() {
         MainActivity activity = (MainActivity) getActivity();
         String idBoss = activity.getBossID();
         return idBoss;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        employeeList = new ArrayList<>();
-        employeeAdapter = new MyEmployeeAdapter(getContext(), employeeList);
-        employeeAdapter.notifyDataSetChanged();
-        lv.setAdapter(employeeAdapter);
-    }
 }
