@@ -2,6 +2,8 @@ package edu.fpt.lab4.adapters;
 import static java.security.AccessController.getContext;
 
 import android.content.Context;
+import android.transition.AutoTransition;
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.material.divider.MaterialDivider;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -54,15 +57,17 @@ public class MyEmployeeAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.layout_emp, parent, false);
             viewHolder = new ViewHolder();
-            viewHolder.ln=convertView.findViewById(R.id.lnHidden);
+            viewHolder.lnContain=convertView.findViewById(R.id.lnContain);
+            viewHolder.lnMore=convertView.findViewById(R.id.lnMore);
+            viewHolder.dividerLine=convertView.findViewById(R.id.dividerLine);
             viewHolder.tvName = convertView.findViewById(R.id.tvNameMain);
             viewHolder.tvEmail=convertView.findViewById(R.id.tvEmailMain);
             viewHolder.tvAddress=convertView.findViewById(R.id.tvAddressMain);
             viewHolder.tvPhone=convertView.findViewById(R.id.tvPhoneMain);
             viewHolder.tvRole=convertView.findViewById(R.id.tvRoleMain);
             viewHolder.tvGender=convertView.findViewById(R.id.tvGenderMain);
-            viewHolder.btn=convertView.findViewById(R.id.btnShowMore);
             viewHolder.img=convertView.findViewById(R.id.imgEmpMain);
+            viewHolder.imgBtn=convertView.findViewById(R.id.imgMore);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -77,50 +82,45 @@ public class MyEmployeeAdapter extends BaseAdapter {
         viewHolder.tvGender.setText(employee.getGender());
 
 
-        Animation expand = AnimationUtils.loadAnimation(context, R.anim.expand);
-        Animation collapse = AnimationUtils.loadAnimation(context, R.anim.collapse);
+        Animation up = AnimationUtils.loadAnimation(context, R.anim.slide_up);
+        Animation down = AnimationUtils.loadAnimation(context, R.anim.slide_down);
 
 
-        viewHolder.btn.setOnClickListener(new View.OnClickListener() {
+        viewHolder.imgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(viewHolder.tvGender.getVisibility()==View.VISIBLE && viewHolder.tvRole.getVisibility()== View.VISIBLE &&  viewHolder.tvAddress.getVisibility()==View.VISIBLE){
-                    viewHolder.tvGender.setVisibility(View.GONE);
-                    viewHolder.tvRole.setVisibility(View.GONE);
-                    viewHolder.tvAddress.setVisibility(View.GONE);
-
-//                    viewHolder.ln.startAnimation(collapse);
-//                    viewHolder.tvRole.startAnimation(collapse);
-//                    viewHolder.tvAddress.startAnimation(collapse);
+                if(viewHolder.dividerLine.getVisibility()==View.VISIBLE && viewHolder.lnMore.getVisibility()==View.VISIBLE){
+                    viewHolder.dividerLine.setVisibility(View.GONE);
+                    viewHolder.lnMore.setVisibility(View.GONE);
+                    viewHolder.imgBtn.setRotation(0);
                 }else{
-                    viewHolder.tvGender.setVisibility(View.VISIBLE);
-                    viewHolder.tvRole.setVisibility(View.VISIBLE);
-                    viewHolder.tvAddress.setVisibility(View.VISIBLE);
-//                    viewHolder.ln.startAnimation(expand);
-//                    viewHolder.tvRole.startAnimation(expand);
-//                    viewHolder.tvAddress.startAnimation(expand);
-
+                    viewHolder.imgBtn.setRotation(90);
+                    viewHolder.dividerLine.setVisibility(View.VISIBLE);
+                    viewHolder.lnMore.setVisibility(View.VISIBLE);
                 }
             }
         });
 
 
+
+
         String base64Image = employee.getImage();
-        if (!base64Image.isEmpty()) {
+        if (base64Image==null) {
+            viewHolder.img.setImageResource(R.drawable.poly);
+        } else {
             byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
             Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             viewHolder.img.setImageBitmap(decodedBitmap);
-        } else {
-            viewHolder.img.setImageResource(R.drawable.poly);
         }
 
         return convertView;
     }
 
     static class ViewHolder {
-        LinearLayout ln;
+        LinearLayout lnMore,lnContain;
+        MaterialDivider dividerLine;
+
         TextView tvName,tvEmail,tvPhone,tvAddress,tvRole,tvGender;
-        Button btn;
-        ImageView img;
+        ImageView img,imgBtn;
     }
 }
