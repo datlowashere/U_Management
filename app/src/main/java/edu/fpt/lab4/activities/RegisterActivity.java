@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -31,36 +30,29 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        edName=findViewById(R.id.edNameRegis);
+        edName=findViewById(R.id.edNewPss);
         edEmail=findViewById(R.id.edEmailRegis);
         edPhone=findViewById(R.id.edPhoneRegis);
         edAddress=findViewById(R.id.edAddressRegis);
         edPassword=findViewById(R.id.edPasswordRegis);
         edComfirm=findViewById(R.id.edRePasswordRegis);
 
-        findViewById(R.id.btnRegister).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                registerUser();
-
-            }
+        findViewById(R.id.btnRegister).setOnClickListener(v -> {
+            registerUser();
         });
-        findViewById(R.id.tvBackToLogin).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                backToLogin();
-            }
+        findViewById(R.id.tvBackToLogin).setOnClickListener(v -> {
+            backToLogin();
         });
     }
 
     private void registerUser() {
         if(Validate()>0) {
             ApiInterface apiInterface = RetrofitClient.getRetrofitInstance().create(ApiInterface.class);
-            String name=edName.getText().toString();
-            String email=edEmail.getText().toString();
-            String phone=edPhone.getText().toString();
-            String address=edAddress.getText().toString();
-            String pass=edPassword.getText().toString();
+            String name=edName.getText().toString().trim();
+            String email=edEmail.getText().toString().trim();
+            String phone=edPhone.getText().toString().trim();
+            String address=edAddress.getText().toString().trim();
+            String pass=edPassword.getText().toString().trim();
 
             User user = new User(email, pass, name, phone, address);
 
@@ -89,7 +81,6 @@ public class RegisterActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    // Xử lý lỗi kết nối
                     Toast.makeText(RegisterActivity.this, "Error", Toast.LENGTH_SHORT).show();
                     Log.e("ERROR", t.getMessage());
                 }
@@ -100,7 +91,7 @@ public class RegisterActivity extends AppCompatActivity {
     private int Validate(){
         int check=1;
         String name=edName.getText().toString();
-        String email=edEmail.getText().toString();
+        String email=edEmail.getText().toString().trim();
         String phone=edPhone.getText().toString();
         String address=edAddress.getText().toString();
         String pass=edPassword.getText().toString();
