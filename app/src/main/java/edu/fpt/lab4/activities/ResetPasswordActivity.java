@@ -13,6 +13,11 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
 import edu.fpt.lab4.R;
 import edu.fpt.lab4.models.ResetPasswordRequest;
 import edu.fpt.lab4.models.ResetPasswordResponse;
@@ -43,7 +48,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String email = iemail;
                 Log.i("EMAIL USERR:",""+email);
-                String resetToken = edCode.getText().toString();
+                int resetToken = Integer.parseInt(edCode.getText().toString());
                 String newPassword = edNewPassword.getText().toString();
                 Log.i("RESET TOKEN",""+resetToken);
 
@@ -58,7 +63,18 @@ public class ResetPasswordActivity extends AppCompatActivity {
                             startActivity(new Intent(ResetPasswordActivity.this,LoginActivity.class));
                             finish();
                         } else {
-                            Toast.makeText(ResetPasswordActivity.this, "Password reset failed", Toast.LENGTH_SHORT).show();
+                            String errorBody = null;
+                            try {
+                                errorBody = response.errorBody().string();
+                                JSONObject jsonObject = new JSONObject(errorBody);
+                                String errorMessage = jsonObject.getString("message");
+                                Toast.makeText(ResetPasswordActivity.this, "Password reset failed"+errorMessage, Toast.LENGTH_SHORT).show();
+
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            } catch (JSONException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
                     }
 
