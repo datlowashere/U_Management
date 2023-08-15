@@ -9,4 +9,5 @@ public class ResetPasswordResponse {
     public String getMessage() {
         return message;
     }
+//
 }

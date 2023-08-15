@@ -21,4 +21,5 @@ public class ResetPasswordRequest {
         this.resetToken = resetToken;
         this.newPassword = newPassword;
     }
+//
 }
