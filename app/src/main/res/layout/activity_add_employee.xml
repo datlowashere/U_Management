@@ -41,12 +41,13 @@
 
             <androidx.coordinatorlayout.widget.CoordinatorLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp">
+                android:layout_height="200dp"
+                android:padding="10dp">
                 <ImageView
                     android:id="@+id/imgSelected"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/poly"
+                    android:src="@drawable/imgpic"
                     android:scaleType="centerInside"
                     android:layout_margin="16dp"/>
 
@@ -54,7 +55,7 @@
                     android:id="@+id/imgChooseBtn"
                     android:layout_width="45dp"
                     android:layout_height="45dp"
-                    android:src="@drawable/menu"
+                    android:src="@drawable/camp"
                     android:layout_gravity="bottom|end"
                     android:clickable="true"
                     android:onClick="chooseImage" />
@@ -162,6 +163,7 @@
                     android:layout_height="wrap_content"
                     android:background="#D9D9D9"
                     android:hint="...."
+                    android:inputType="phone"
                     android:padding="10dp" />
             </LinearLayout>
 
@@ -204,28 +206,50 @@
                     android:textColor="@color/black"
                     android:textSize="16sp" />
 
-                <EditText
-                    android:id="@+id/edRoleEmp"
-                    android:layout_width="match_parent"
+
+                <RadioGroup
+                    android:id="@+id/radioGroup2"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="#D9D9D9"
-                    android:hint="...."
-                    android:padding="10dp" />
+                    android:orientation="horizontal"
+                    android:layout_margin="10dp">
+
+                    <RadioButton
+                        android:id="@+id/radioButtonAsst"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Asst store" />
+
+                    <RadioButton
+                        android:id="@+id/radioButtonCashier"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cashier" />
+                    <RadioButton
+                        android:id="@+id/radioButtonFloorManager"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Floor manager" />
+
+                </RadioGroup>
             </LinearLayout>
 
             <Button
                 android:id="@+id/btnSaveEmp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="@color/colorPrimary"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"                android:background="@color/colorPrimary"
                 android:text="Save"
                 android:textColor="@color/white" />
             <Button
                 android:id="@+id/btnCancelSaveEmp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
                 android:text="Cancel" />
         </LinearLayout>
     </ScrollView>
