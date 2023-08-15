@@ -10,13 +10,17 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
@@ -48,17 +52,11 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private View mHeaderView;
     private TextView tvUser;
+    private ImageView imgUser;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = getIntent();
-        String email = intent.getStringExtra("email");
-        String name = intent.getStringExtra("name");
-        String password = intent.getStringExtra("password");
-        String address = intent.getStringExtra("address");
-        String phone = intent.getStringExtra("phone");
-        String id=intent.getStringExtra("id");
         setContentView(R.layout.activity_main);
 
         toolbar=findViewById(R.id.toolBar);
@@ -67,10 +65,11 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout=findViewById(R.id.drawer_layoutT);
 
         mHeaderView=navigationView.getHeaderView(0);
+
+        imgUser=mHeaderView.findViewById(R.id.imgUserNav);
         tvUser=mHeaderView.findViewById(R.id.tvUserNav);
 
 
-        tvUser.setText(getName());
 
 
         setSupportActionBar(toolbar);
@@ -110,8 +109,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-
+        getUserInformation();
 
 
     }
@@ -130,109 +128,45 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-//    private void openDialog(){
-//        dialog=new Dialog(MainActivity.this);
-//        dialog.setContentView(R.layout.layout_change_information);
-//
-//
-//        edName=dialog.findViewById(R.id.edChangeName);
-//        edAddress=dialog.findViewById(R.id.edChangeAddress);
-//        edPhone=dialog.findViewById(R.id.edChangePhone);
-//        edPass=dialog.findViewById(R.id.edChangePass);
-//        edComfirm=dialog.findViewById(R.id.edChangePasComfirm);
-//
-//        edName.setText(getName());
-//        edAddress.setText(getAddress());
-//        edPhone.setText(getPhone());
-//
-//
-//        dialog.findViewById(R.id.btnSaveChange).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(edComfirm.getText().toString().isEmpty()){
-//                    Toast.makeText(MainActivity.this,"Please fill all the field",Toast.LENGTH_SHORT).show();
-//
-//                }else if(!edComfirm.getText().toString().equals(edPass.getText().toString())){
-//                    Toast.makeText(MainActivity.this,"Comfirm pass is incorrect!",Toast.LENGTH_SHORT).show();
-//
-//                }else{
-//                    User updatedUser = new User();
-//                    updatedUser.setEmail(getEmail());
-//                    updatedUser.setPassword(edPass.getText().toString());
-//                    updatedUser.setName(edName.getText().toString());
-//                    updatedUser.setPhone(edPhone.getText().toString());
-//                    updatedUser.setAddress(edAddress.getText().toString());
-//                    updateUserByEmail(getEmail(),updatedUser);
-//                }
-//            }
-//        });
-//        dialog.findViewById(R.id.btnCancelChange).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                dialog.dismiss();
-//            }
-//        });
-//        dialog.show();
-//
-//
-//    }
 
-//    private void updateUserByEmail(String email, User updatedUser) {
-//        ApiInterface apiInterface = RetrofitClient.getRetrofitInstance().create(ApiInterface.class);
-//
-//        Call<User> call = apiInterface.updateUserByEmail(email, updatedUser);
-//        call.enqueue(new Callback<User>() {
-//            @Override
-//            public void onResponse(Call<User> call, Response<User> response) {
-//                if (response.isSuccessful()) {
-//                    User updatedUser = response.body();
-//                    Toast.makeText(MainActivity.this, "Thông tin người dùng đã được cập nhật", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    Toast.makeText(MainActivity.this, "Cập nhật thông tin người dùng thất bại", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<User> call, Throwable t) {
-//                // Xử lý lỗi kết nối
-//                Toast.makeText(MainActivity.this, "Đã xảy ra lỗi", Toast.LENGTH_SHORT).show();
-//                Log.e("ERROR", t.getMessage());
-//            }
-//        });
-//    }
-//
+    private void getUserInformation(){
+        ApiInterface apiService = RetrofitClient.getRetrofitInstance().create(ApiInterface.class);
+        Call<User> call = apiService.getUserById(getBossID());
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful()) {
+                    User user = response.body();
+                    if (user != null) {
+                        byte[] decodedString = Base64.decode(user.getImg(), Base64.DEFAULT);
+                        Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        imgUser.setImageBitmap(decodedBitmap);
 
+                        tvUser.setText(user.getName());
+
+                    }
+                } else {
+                    Log.i("Error","Can't get the user information"+response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Log.i("Error",""+t.getMessage().toString());
+                t.printStackTrace();
+            }
+        });
+    }
 
     public  String getBossID(){
         Intent intent = getIntent();
         String idBoss = intent.getStringExtra("id");
         return idBoss;
     }
-    private String getName(){
-        Intent intent = getIntent();
-        String name = intent.getStringExtra("name");
-        return name;
-    }
-    private String getEmail(){
-        Intent intent = getIntent();
-        String email = intent.getStringExtra("email");
-        return email;
-    }
-    private String getPhone(){
-        Intent intent = getIntent();
-        String phone = intent.getStringExtra("phone");
-        return phone;
-    }
-    private String getPassword(){
-        Intent intent = getIntent();
 
-        String password = intent.getStringExtra("password");
-        return password;
-    }
-    private String getAddress(){
-        Intent intent = getIntent();
-        String address = intent.getStringExtra("address");
-        return address;
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getUserInformation();
     }
 }
