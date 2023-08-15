@@ -3,9 +3,11 @@ package edu.fpt.lab4.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -27,6 +29,7 @@ import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
     private TextInputEditText edEmail,edPassword;
+    private CheckBox ckBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,28 +40,22 @@ public class LoginActivity extends AppCompatActivity {
         edEmail=findViewById(R.id.edUser);
         edPassword=findViewById(R.id.edPass);
 
-        findViewById(R.id.btnLogin).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loginUser();
+        ckBox=findViewById(R.id.ckPass);
 
-            }
+        findViewById(R.id.btnLogin).setOnClickListener(v -> {
+            loginUser();
         });
-        findViewById(R.id.tvRegister).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent iToRegister=new Intent(LoginActivity.this,RegisterActivity.class);
-                startActivity(iToRegister);
-            }
+        findViewById(R.id.tvRegister).setOnClickListener(v -> {
+            Intent iToRegister=new Intent(LoginActivity.this,RegisterActivity.class);
+            startActivity(iToRegister);
         });
 
-        findViewById(R.id.tvForgotPass).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent iforgot=new Intent(LoginActivity.this,ForgotPasswordActivity.class);
-                startActivity(iforgot);
-            }
+        findViewById(R.id.tvForgotPass).setOnClickListener(v -> {
+            Intent iforgot=new Intent(LoginActivity.this,ForgotPasswordActivity.class);
+            startActivity(iforgot);
         });
+
+        restoringUser();
     }
 
     private void loginUser() {
@@ -86,6 +83,7 @@ public class LoginActivity extends AppCompatActivity {
                             String address="";
                             String phone="";
                             String objectId="";
+                            String imgUrl="";
 
                             JSONObject jsonObject = new JSONObject(response.body().string());
                             if(jsonObject.has("id")){
@@ -106,6 +104,9 @@ public class LoginActivity extends AppCompatActivity {
                             if (jsonObject.has("phone")) {
                                 phone = jsonObject.getString("phone");
                             }
+                            if(jsonObject.has("img")){
+                                imgUrl=jsonObject.getString("img");
+                            }
 
 
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -115,7 +116,9 @@ public class LoginActivity extends AppCompatActivity {
                             intent.putExtra("password", password);
                             intent.putExtra("address", address);
                             intent.putExtra("phone", phone);
+                            intent.putExtra("img",imgUrl);
 
+                            rememberUser(email,password,ckBox.isChecked());
                             startActivity(intent);
                             finish();
                         } catch (JSONException e) {
@@ -124,8 +127,18 @@ public class LoginActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     } else {
+                        try {
+                           String errorBody = response.errorBody().string();
+                            JSONObject jsonObject = new JSONObject(errorBody);
+                            String errorMessage = jsonObject.getString("message");
+                            Toast.makeText(LoginActivity.this, "Logging Failed"+errorMessage, Toast.LENGTH_SHORT).show();
 
-                        Toast.makeText(LoginActivity.this, "Logging Failed"+response.message(), Toast.LENGTH_SHORT).show();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+
                     }
                 }
 
@@ -148,6 +161,33 @@ public class LoginActivity extends AppCompatActivity {
             check=-1;
         }
         return check;
+    }
+
+    private void rememberUser(String email,String password,boolean status){
+        SharedPreferences spf = getSharedPreferences("file", MODE_PRIVATE);
+        SharedPreferences.Editor editor = spf.edit();
+        String user = edEmail.getText().toString();
+        String pass = edPassword.getText().toString();
+        boolean ck = ckBox.isChecked();
+        if (!ck) {
+            editor.clear();
+        } else {
+            editor.putString("email", user);
+            editor.putString("password", pass);
+            editor.putBoolean("checked", ck);
+        }
+        editor.commit();
+    }
+    private void restoringUser(){
+        SharedPreferences spf=getSharedPreferences("file",MODE_PRIVATE);
+        boolean ck=spf.getBoolean("checked",false);
+        if(ck){
+            String user=spf.getString("email","");
+            String pass=spf.getString("password","");
+            edEmail.setText(user);
+            edPassword.setText(pass);
+            ckBox.setChecked(true);
+        }
     }
 
 }
